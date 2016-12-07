@@ -1,0 +1,39 @@
+SELECT
+ca.reference_number AS case_reference,
+cl.reference_number AS client_reference,
+cn.advice_level,
+cn.work_type,
+cn.channel,
+cn.channel_other,
+cn.title,
+cn.next_steps,
+cn.signposted,
+lo."name" AS "location",
+f."name" AS funder,
+f.funder_type,
+clad.local_authority,
+clad.local_authority_code,
+clad.local_authority_ward AS ward,
+clad.local_authority_ward_code AS ward_code,
+clad.lower_super_output_area AS lsoa,
+clad.lower_super_output_area_code AS lsoa_code,
+clo."name" AS case_closure_reason,
+ca.case_closed_on,
+u1.username AS created_by,
+u2.username AS updated_by,
+cn.created_at,
+cn.updated_at,
+tags."name" AS tags
+FROM "public".case_notes AS cn
+
+INNER JOIN "public".cases AS ca ON cn.case_id = ca."id"
+INNER JOIN "public".clients AS cl ON ca.client_id = cl."id"
+INNER JOIN "public".funders AS f ON cn.funder_id = f."id"
+INNER JOIN "public".locations AS lo ON cl.location_id = lo."id"
+INNER JOIN "public".users AS u1 ON cn.created_by_user_id = u1."id"
+INNER JOIN "public".users AS u2 ON cn.updated_by_user_id = u2."id"
+
+LEFT OUTER JOIN "public".client_addresses AS clad ON clad.client_id = cl."id"
+LEFT OUTER JOIN "public".case_closure_reasons AS clo ON ca.case_closure_reason_id = clo."id"
+LEFT OUTER JOIN "public".case_note_tags cnt ON cnt.case_note_id = cn."id" 
+LEFT OUTER JOIN "public".tags tags ON cnt.tag_id = tags."id"
